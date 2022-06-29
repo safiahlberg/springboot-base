@@ -7,6 +7,7 @@ import org.springframework.hateoas.EntityModel;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -29,33 +30,36 @@ public class CustomerController {
     }
 
     @RequestMapping("/customers")
-    public ResponseEntity<CollectionModel<EntityModel<CustomerEo>>> findAll() {
+    public ResponseEntity<CollectionModel<EntityModel<CustomerEo>>> findAll(
+            @RequestParam(defaultValue = "0") long delayInMs
+    ) {
 
         final List<EntityModel<CustomerEo>> customers = StreamSupport.stream(
-                customerRepository.findAllSlow().spliterator(), false)
+                customerRepository.findAllDelayable(delayInMs).spliterator(), false)
                 .map(customer -> EntityModel.of(customer,
                         linkTo(methodOn(CustomerController.class).findOne(customer.getId())).withSelfRel(),
-                        linkTo(methodOn(CustomerController.class).findAll()).withRel("customers")))
+                        linkTo(methodOn(CustomerController.class).findAll(delayInMs)).withRel("customers")))
                         .collect(Collectors.toList());
 
         return ResponseEntity.ok(
                 CollectionModel.of(customers,
-                        linkTo(methodOn(CustomerController.class).findAll()).withSelfRel())
+                        linkTo(methodOn(CustomerController.class).findAll(delayInMs)).withSelfRel())
         );
     }
 
     /**
-     * This is a bit convoluted, it requires exposing the ID's from persistence, which we don't do
+     * This is a bit convoluted, it requires exposing the ID's from persistence, which we don't do in our system,
+     * but OK for POC.
      *
-     * @param id
-     * @return
+     * @param id The customer ID (database ID in this case, but it could possibly be reworked to be a data ID instead)
+     * @return the customer corresponding to the ID
      */
     @RequestMapping("/customers/{id}")
     public ResponseEntity<EntityModel<CustomerEo>> findOne(@PathVariable long id) {
         return customerRepository.findById(id)
                 .map(customer -> EntityModel.of(customer,
                         linkTo(methodOn(CustomerController.class).findOne(customer.getId())).withSelfRel(),
-                        linkTo(methodOn(CustomerController.class).findAll()).withRel("customers")))
+                        linkTo(methodOn(CustomerController.class).findAll(0)).withRel("customers")))
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
