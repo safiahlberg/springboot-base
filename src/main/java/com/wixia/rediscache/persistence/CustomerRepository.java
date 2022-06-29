@@ -6,7 +6,7 @@ import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 
-public interface CustomerRepository extends CrudRepository<CustomerEo, Long> {
+public interface CustomerRepository extends CrudRepository<CustomerEo, Long>, CustomerRepositorySlow {
 
     List<CustomerEo> findByLastName(String lastName);
 
@@ -14,6 +14,6 @@ public interface CustomerRepository extends CrudRepository<CustomerEo, Long> {
 
     List<CustomerEo> findByFirstNameAndLastName(String firstName, String lastName);
 
-    @Query("select c from Customer c where c.firstName = :searchName or c.lastName = :searchName")
+    @Query("select c from customer c where c.firstName = :searchName or c.lastName = :searchName")
     List<CustomerEo> findByFirstNameOrLastName(@Param("searchName") String searchName);
 }

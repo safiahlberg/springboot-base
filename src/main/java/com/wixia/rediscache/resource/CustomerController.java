@@ -32,7 +32,7 @@ public class CustomerController {
     public ResponseEntity<CollectionModel<EntityModel<CustomerEo>>> findAll() {
 
         final List<EntityModel<CustomerEo>> customers = StreamSupport.stream(
-                customerRepository.findAll().spliterator(), false)
+                customerRepository.findAllSlow().spliterator(), false)
                 .map(customer -> EntityModel.of(customer,
                         linkTo(methodOn(CustomerController.class).findOne(customer.getId())).withSelfRel(),
                         linkTo(methodOn(CustomerController.class).findAll()).withRel("customers")))
