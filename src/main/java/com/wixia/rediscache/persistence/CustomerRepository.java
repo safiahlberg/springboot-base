@@ -1,12 +1,12 @@
 package com.wixia.rediscache.persistence;
 
-import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 
-public interface CustomerRepository extends JpaRepository<CustomerEo, Long> {
+public interface CustomerRepository extends CrudRepository<CustomerEo, Long> {
 
     List<CustomerEo> findByLastName(String lastName);
 
@@ -16,6 +16,4 @@ public interface CustomerRepository extends JpaRepository<CustomerEo, Long> {
 
     @Query("select c from Customer c where c.firstName = :searchName or c.lastName = :searchName")
     List<CustomerEo> findByFirstNameOrLastName(@Param("searchName") String searchName);
-
-    CustomerEo findById(long id);
 }

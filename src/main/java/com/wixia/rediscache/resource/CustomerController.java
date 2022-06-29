@@ -2,16 +2,23 @@ package com.wixia.rediscache.resource;
 
 import com.wixia.rediscache.persistence.CustomerEo;
 import com.wixia.rediscache.persistence.CustomerRepository;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpStatus;
+import org.springframework.hateoas.CollectionModel;
+import org.springframework.hateoas.EntityModel;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
+
+/**
+ * A tight coupling to between controller and repository, but OK for demonstration.
+ */
 @RestController
 public class CustomerController {
 
@@ -21,33 +28,36 @@ public class CustomerController {
         this.customerRepository = customerRepository;
     }
 
-    @RequestMapping("customer")
-    public HttpEntity<List<CustomerRepresentation>> customer(
-            @RequestParam(value = "firstName", required = false) String firstName,
-            @RequestParam(value = "lastName", required = false) String lastName) {
+    @RequestMapping("/customers")
+    public ResponseEntity<CollectionModel<EntityModel<CustomerEo>>> findAll() {
 
-        final List<CustomerEo> customerEo = findCustomers(firstName, lastName);
+        final List<EntityModel<CustomerEo>> customers = StreamSupport.stream(
+                customerRepository.findAll().spliterator(), false)
+                .map(customer -> EntityModel.of(customer,
+                        linkTo(methodOn(CustomerController.class).findOne(customer.getId())).withSelfRel(),
+                        linkTo(methodOn(CustomerController.class).findAll()).withRel("customers")))
+                        .collect(Collectors.toList());
 
-        final List<CustomerRepresentation> customerRepresentations = mapCustomers(customerEo);
-
-        return new ResponseEntity<>(customerRepresentations, HttpStatus.OK);
+        return ResponseEntity.ok(
+                CollectionModel.of(customers,
+                        linkTo(methodOn(CustomerController.class).findAll()).withSelfRel())
+        );
     }
 
-    private List<CustomerRepresentation> mapCustomers(List<CustomerEo> customerEo) {
-        final List<CustomerRepresentation> customerRepresentations = customerEo.stream().map(
-                ceo -> new CustomerRepresentation(ceo.getFirstName(), ceo.getLastName())).collect(Collectors.toList());
-        return customerRepresentations;
+    /**
+     * This is a bit convoluted, it requires exposing the ID's from persistence, which we don't do
+     *
+     * @param id
+     * @return
+     */
+    @RequestMapping("/customers/{id}")
+    public ResponseEntity<EntityModel<CustomerEo>> findOne(@PathVariable long id) {
+        return customerRepository.findById(id)
+                .map(customer -> EntityModel.of(customer,
+                        linkTo(methodOn(CustomerController.class).findOne(customer.getId())).withSelfRel(),
+                        linkTo(methodOn(CustomerController.class).findAll()).withRel("customers")))
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
     }
 
-    private List<CustomerEo> findCustomers(String firstName, String lastName) {
-        if (firstName == null && lastName == null) {
-            return customerRepository.findAll();
-        } else if (lastName == null) {
-            return customerRepository.findByFirstName(firstName);
-        } else if (firstName == null) {
-            return customerRepository.findByLastName(lastName);
-        } else {
-            return customerRepository.findByFirstNameAndLastName(firstName, lastName);
-        }
-    }
 }
