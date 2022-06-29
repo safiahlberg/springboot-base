@@ -5,8 +5,8 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
-@Entity
-public class Customer {
+@Entity(name = "Customer")
+public class CustomerEo {
 
     @Id
     @GeneratedValue(strategy= GenerationType.AUTO)
@@ -14,9 +14,9 @@ public class Customer {
     private String firstName;
     private String lastName;
 
-    protected Customer() {}
+    protected CustomerEo() {}
 
-    public Customer(String firstName, String lastName) {
+    public CustomerEo(String firstName, String lastName) {
         this.firstName = firstName;
         this.lastName = lastName;
     }
