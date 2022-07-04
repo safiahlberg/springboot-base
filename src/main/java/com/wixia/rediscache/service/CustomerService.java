@@ -20,6 +20,6 @@ public class CustomerService {
     }
 
     public Iterable<CustomerEo> findAllDelayable(long delayInMs) {
-        return findAllDelayable(delayInMs);
+        return customerRepository.findAllDelayable(delayInMs);
     }
 }
