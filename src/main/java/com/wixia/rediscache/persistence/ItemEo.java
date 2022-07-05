@@ -31,13 +31,6 @@ public class ItemEo {
         this.owner = owner;
     }
 
-    @Override
-    public String toString() {
-        return String.format(
-            "Item[id=%d, name='%s', price='%d', owner='%s']",
-            id, name, price, Optional.of(owner).map(CustomerEo::toString));
-    }
-
     public Long getId() {
         return id;
     }
@@ -50,6 +43,10 @@ public class ItemEo {
         return price;
     }
 
+    public void setPrice(Integer price) {
+        this.price = price;
+    }
+
     public CustomerEo getOwner() {
         return owner;
     }
@@ -57,5 +54,14 @@ public class ItemEo {
     public void setOwner(CustomerEo owner) {
         this.owner = owner;
     }
+
+/*
+    @Override
+    public String toString() {
+        return String.format(
+            "Item[id=%d, name='%s', price='%d', owner='%s']",
+            id, name, price, Optional.of(owner).map(CustomerEo::toString));
+    }
+*/
 
 }
