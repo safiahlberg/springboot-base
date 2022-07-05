@@ -7,18 +7,31 @@
             <column name="id" type="bigint">
                 <constraints primaryKey="true" primaryKeyName="customer_id_pk" />
             </column>
-            <column name="first_name" type="varchar(250)" />
-            <column name="last_name" type="varchar(250)" />
+            <column name="first_name" type="varchar(250)" >
+                <constraints nullable="false" notNullConstraintName="customer_first_name_nn" />
+            </column>
+            <column name="last_name" type="varchar(250)" >
+                <constraints nullable="false" notNullConstraintName="customer_last_name_nn" />
+            </column>
         </createTable>
         <addAutoIncrement tableName="customer" columnName="id" columnDataType="bigint" startWith="1" incrementBy="1" />
+        <addUniqueConstraint tableName="customer" columnNames="first_name, last_name" constraintName="customer_first_name_last_name_uc" />
         <createTable tableName="item">
             <column name="id" type="bigint">
                 <constraints primaryKey="true" primaryKeyName="item_id_pk" />
             </column>
-            <column name="name" type="varchar(250)" />
+            <column name="name" type="varchar(250)">
+                <constraints nullable="false" notNullConstraintName="item_name_nn" />
+            </column>
             <column name="price" type="bigint" />
+            <column name="customer_id" type="bigint">
+                <!-- No constraint for now -->
+            </column>
         </createTable>
         <addAutoIncrement tableName="item" columnName="id" columnDataType="bigint" startWith="1" incrementBy="1" />
         <createSequence sequenceName="hibernate_sequence" incrementBy="1" startValue="1" />
+        <addForeignKeyConstraint baseTableName="item" baseColumnNames="customer_id" constraintName="item_customer_fk"
+                                 referencedTableName="customer"
+                                 referencedColumnNames="id" />
     </changeSet>
 </databaseChangeLog>
