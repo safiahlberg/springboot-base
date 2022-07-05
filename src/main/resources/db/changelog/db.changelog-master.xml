@@ -11,6 +11,14 @@
             <column name="last_name" type="varchar(250)" />
         </createTable>
         <addAutoIncrement tableName="customer" columnName="id" columnDataType="bigint" startWith="1" incrementBy="1" />
+        <createTable tableName="item">
+            <column name="id" type="bigint">
+                <constraints primaryKey="true" primaryKeyName="item_id_pk" />
+            </column>
+            <column name="name" type="varchar(250)" />
+            <column name="price" type="bigint" />
+        </createTable>
+        <addAutoIncrement tableName="item" columnName="id" columnDataType="bigint" startWith="1" incrementBy="1" />
         <createSequence sequenceName="hibernate_sequence" incrementBy="1" startValue="1" />
     </changeSet>
 </databaseChangeLog>
