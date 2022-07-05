@@ -1,9 +1,7 @@
 package com.wixia.rediscache.persistence;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
+import java.util.Optional;
 
 @Entity(name = "item")
 public class ItemEo {
@@ -11,8 +9,14 @@ public class ItemEo {
     @Id
     @GeneratedValue(strategy= GenerationType.AUTO)
     private Long id;
+
     private String name;
+
     private Integer price;
+
+    @ManyToOne
+    @JoinColumn(name = "customer_id")
+    private CustomerEo owner;
 
     protected ItemEo() {}
 
@@ -21,11 +25,17 @@ public class ItemEo {
         this.price = price;
     }
 
+    public ItemEo(String name, Integer price, CustomerEo owner) {
+        this.name = name;
+        this.price = price;
+        this.owner = owner;
+    }
+
     @Override
     public String toString() {
         return String.format(
-            "Item[id=%d, name='%s', price='%d']",
-            id, name, price);
+            "Item[id=%d, name='%s', price='%d', owner='%s']",
+            id, name, price, Optional.of(owner).map(CustomerEo::toString));
     }
 
     public Long getId() {
@@ -39,4 +49,13 @@ public class ItemEo {
     public Integer getPrice() {
         return price;
     }
+
+    public CustomerEo getOwner() {
+        return owner;
+    }
+
+    public void setOwner(CustomerEo owner) {
+        this.owner = owner;
+    }
+
 }
