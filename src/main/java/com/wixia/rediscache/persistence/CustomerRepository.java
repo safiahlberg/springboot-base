@@ -6,7 +6,7 @@ import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 
-public interface CustomerRepository extends CrudRepository<CustomerEo, Long>, CustomerRepositorySlow {
+public interface CustomerRepository extends CrudRepository<CustomerEo, Long>, CustomerRepositoryCacheable {
 
     List<CustomerEo> findByLastName(String lastName);
 
