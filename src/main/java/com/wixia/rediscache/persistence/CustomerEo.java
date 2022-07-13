@@ -3,11 +3,12 @@ package com.wixia.rediscache.persistence;
 import org.springframework.lang.NonNull;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity(name = "customer")
-public class CustomerEo {
+public class CustomerEo implements Serializable {
 
     @Id
     @GeneratedValue(strategy= GenerationType.AUTO)
