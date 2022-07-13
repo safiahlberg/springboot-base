@@ -28,17 +28,16 @@ public class CustomerService {
     }
 
     public List<CustomerEo> findAllDelayable(long delayInMs) {
-        try {
-            return customerRepository.findAllDelayable(delayInMs);
-        } catch (RuntimeException ex) {
-            logger.warn("Exception when using delayed call.", ex);
-            return StreamSupport
-                .stream(customerRepository.findAll().spliterator(), false)
-                .collect(Collectors.toList());
-        }
+        return customerRepository.findAllDelayable(delayInMs);
     }
 
     public CustomerEo findByFirstNameAndLastNameDelayable(String firstName, String lastName, long delayInMs) {
-        return customerRepository.findByFirstNameAndLastNameDelayable(firstName, lastName, delayInMs);
+        try {
+            return customerRepository.findByFirstNameAndLastNameDelayable(firstName, lastName, delayInMs);
+        } catch (RuntimeException ex) {
+            // This is a rudimentary failover for cache problems
+            logger.warn("Exception when using cacheable call. Trying with a direct call instead.", ex);
+            return customerRepository.findByFirstNameAndLastName(firstName, lastName);
+        }
     }
 }
