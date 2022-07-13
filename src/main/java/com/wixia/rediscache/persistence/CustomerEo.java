@@ -20,6 +20,7 @@ public class CustomerEo implements Serializable {
     private String lastName;
 
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "owner")
+    // EAGER is needed, or else we get in trouble when re-creating from cache
     private List<ItemEo> items;
 
     protected CustomerEo() {}
