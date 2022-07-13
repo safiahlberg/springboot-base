@@ -38,4 +38,10 @@ public class CustomerController {
         return customerService.findById(id).orElse(null);
     }
 
+    @GetMapping("/customers/{firstName}/{lastName}")
+    public CustomerEo findByFirstNameAndLastName(@PathVariable String firstName,
+                                                 @PathVariable String lastName,
+                                                 @RequestParam long delayInMs) {
+        return customerService.findByFirstNameAndLastNameDelayable(firstName, lastName, delayInMs);
+    }
 }

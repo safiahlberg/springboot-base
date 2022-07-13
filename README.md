@@ -5,3 +5,4 @@ Copied code from:
 * https://docs.spring.io/spring-hateoas/docs/current/reference/html/
 * https://stackoverflow.com/questions/11880924/how-to-add-custom-method-to-spring-data-jpa
 * https://www.baeldung.com/spring-boot-redis-cache
+* https://www.baeldung.com/jpa-unique-constraints

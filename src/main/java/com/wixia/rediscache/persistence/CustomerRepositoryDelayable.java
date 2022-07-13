@@ -7,7 +7,7 @@ import java.util.List;
 /**
  * Supports cacheing and also the possibility to simulate delays, in order so see cache effects.
  */
-public interface CustomerRepositoryCacheable {
+public interface CustomerRepositoryDelayable {
 
     /**
      * Find all customers with a possible delay.
@@ -15,8 +15,7 @@ public interface CustomerRepositoryCacheable {
      * @param delayInMs simulated delay, in order to see cache effects.
      * @return the customers
      */
-    @Cacheable(value = "customerCache")
-    List<CustomerEo> findAllCacheable(long delayInMs);
+    List<CustomerEo> findAllDelayable(long delayInMs);
 
     /**
      * Find all customers with given first and last name, with a possible delay.
@@ -24,7 +23,7 @@ public interface CustomerRepositoryCacheable {
      * @param delayInMs simulated delay, in order to see cache effects.
      * @return the customers
      */
-    @Cacheable(value = "customerCache")
-    List<CustomerEo> findByFirstNameAndLastNameCacheable(String firstName, String lastName, long delayInMs);
+    @Cacheable(value = "customerCache", key = "{#firstName, #lastName}")
+    CustomerEo findByFirstNameAndLastNameDelayable(String firstName, String lastName, long delayInMs);
 
 }

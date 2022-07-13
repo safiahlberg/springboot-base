@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity(name = "customer")
+@Table(uniqueConstraints = { @UniqueConstraint(columnNames = { "firstName", "lastName" }) })
 public class CustomerEo implements Serializable {
 
     @Id

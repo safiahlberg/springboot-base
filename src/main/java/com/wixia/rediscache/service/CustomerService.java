@@ -5,7 +5,6 @@ import com.wixia.rediscache.persistence.CustomerRepository;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.data.redis.RedisConnectionFailureException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -30,12 +29,16 @@ public class CustomerService {
 
     public List<CustomerEo> findAllDelayable(long delayInMs) {
         try {
-            return customerRepository.findAllCacheable(delayInMs);
+            return customerRepository.findAllDelayable(delayInMs);
         } catch (RuntimeException ex) {
-            logger.warn("Exception when communicating with Redis. Using direct call instead of cached call.", ex);
+            logger.warn("Exception when using delayed call.", ex);
             return StreamSupport
                 .stream(customerRepository.findAll().spliterator(), false)
                 .collect(Collectors.toList());
         }
+    }
+
+    public CustomerEo findByFirstNameAndLastNameDelayable(String firstName, String lastName, long delayInMs) {
+        return customerRepository.findByFirstNameAndLastNameDelayable(firstName, lastName, delayInMs);
     }
 }
