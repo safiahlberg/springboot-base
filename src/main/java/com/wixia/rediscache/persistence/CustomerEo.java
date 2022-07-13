@@ -18,7 +18,7 @@ public class CustomerEo implements Serializable {
 
     private String lastName;
 
-    @OneToMany(mappedBy = "owner")
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "owner")
     private List<ItemEo> items;
 
     protected CustomerEo() {}
