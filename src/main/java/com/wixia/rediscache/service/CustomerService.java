@@ -8,7 +8,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.data.redis.RedisConnectionFailureException;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 @Service
 public class CustomerService {
@@ -25,12 +28,14 @@ public class CustomerService {
         return customerRepository.findById(id);
     }
 
-        public Iterable<CustomerEo> findAllDelayable(long delayInMs) {
+    public List<CustomerEo> findAllDelayable(long delayInMs) {
         try {
             return customerRepository.findAllCacheable(delayInMs);
         } catch (RuntimeException ex) {
             logger.warn("Exception when communicating with Redis. Using direct call instead of cached call.", ex);
-            return customerRepository.findAll();
+            return StreamSupport
+                .stream(customerRepository.findAll().spliterator(), false)
+                .collect(Collectors.toList());
         }
     }
 }

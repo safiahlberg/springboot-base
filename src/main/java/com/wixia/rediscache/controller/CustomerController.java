@@ -1,20 +1,14 @@
 package com.wixia.rediscache.controller;
 
 import com.wixia.rediscache.persistence.CustomerEo;
-import com.wixia.rediscache.persistence.CustomerRepository;
 import com.wixia.rediscache.service.CustomerService;
 
-import org.springframework.hateoas.CollectionModel;
-import org.springframework.hateoas.EntityModel;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
-
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 /**
  * A tight coupling to between controller and repository, but OK for demonstration.
@@ -28,21 +22,8 @@ public class CustomerController {
     }
 
     @GetMapping("/customers")
-    public ResponseEntity<CollectionModel<EntityModel<CustomerEo>>> findAll(
-            @RequestParam(defaultValue = "0") long delayInMs
-    ) {
-
-        final List<EntityModel<CustomerEo>> customers = StreamSupport.stream(
-                customerService.findAllDelayable(delayInMs).spliterator(), false)
-                .map(customer -> EntityModel.of(customer,
-                        linkTo(methodOn(CustomerController.class).findOne(customer.getId())).withSelfRel(),
-                        linkTo(methodOn(CustomerController.class).findAll(delayInMs)).withRel("customers")))
-                        .collect(Collectors.toList());
-
-        return ResponseEntity.ok(
-                CollectionModel.of(customers,
-                        linkTo(methodOn(CustomerController.class).findAll(delayInMs)).withSelfRel())
-        );
+    public List<CustomerEo> findAll(@RequestParam(defaultValue = "0") long delayInMs) {
+        return customerService.findAllDelayable(delayInMs);
     }
 
     /**
@@ -53,13 +34,8 @@ public class CustomerController {
      * @return the customer corresponding to the ID
      */
     @GetMapping("/customers/{id}")
-    public ResponseEntity<EntityModel<CustomerEo>> findOne(@PathVariable long id) {
-        return customerService.findById(id)
-                .map(customer -> EntityModel.of(customer,
-                        linkTo(methodOn(CustomerController.class).findOne(customer.getId())).withSelfRel(),
-                        linkTo(methodOn(CustomerController.class).findAll(0)).withRel("customers")))
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+    public CustomerEo findOne(@PathVariable long id) {
+        return customerService.findById(id).orElse(null);
     }
 
 }
