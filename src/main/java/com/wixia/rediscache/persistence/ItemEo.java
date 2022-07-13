@@ -1,5 +1,7 @@
 package com.wixia.rediscache.persistence;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Optional;
@@ -17,6 +19,7 @@ public class ItemEo implements Serializable {
 
     @ManyToOne
     @JoinColumn(name = "customer_id")
+    @JsonIgnoreProperties("items")
     private CustomerEo owner;
 
     protected ItemEo() {}
