@@ -5,6 +5,7 @@ import com.wixia.rediscache.persistence.CustomerRepository;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -27,17 +28,23 @@ public class CustomerService {
         return customerRepository.findById(id);
     }
 
-    public List<CustomerEo> findAllDelayable(long delayInMs) {
-        return customerRepository.findAllDelayable(delayInMs);
+    public List<CustomerEo> findAll() {
+        return StreamSupport.stream(customerRepository.findAll().spliterator(), false)
+            .collect(Collectors.toList());
     }
 
-    public CustomerEo findByFirstNameAndLastNameDelayable(String firstName, String lastName, long delayInMs) {
-        try {
-            return customerRepository.findByFirstNameAndLastNameDelayable(firstName, lastName, delayInMs);
-        } catch (RuntimeException ex) {
-            // This is a rudimentary failover for cache problems
-            logger.warn("Exception when using cacheable call. Trying with a direct call instead.", ex);
-            return customerRepository.findByFirstNameAndLastName(firstName, lastName);
-        }
+    @Cacheable(value = "customerCache")
+    public List<CustomerEo> findByLastName(String lastName) {
+        return customerRepository.findByLastName(lastName);
+    }
+
+    @Cacheable(value = "customerCache")
+    public List<CustomerEo> findByFirstName(String firstName) {
+        return customerRepository.findByFirstName(firstName);
+    }
+
+    @Cacheable(value = "customerCache", key = "#firstName.concat('-').concat(#lastName)")
+    public CustomerEo findByFirstNameAndLastName(String firstName, String lastName) {
+        return customerRepository.findByFirstNameAndLastName(firstName, lastName);
     }
 }

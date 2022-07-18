@@ -22,8 +22,8 @@ public class CustomerController {
     }
 
     @GetMapping("/customers")
-    public List<CustomerEo> findAll(@RequestParam(defaultValue = "0") long delayInMs) {
-        return customerService.findAllDelayable(delayInMs);
+    public List<CustomerEo> findAll() {
+        return customerService.findAll();
     }
 
     /**
@@ -33,15 +33,24 @@ public class CustomerController {
      * @param id The customer ID (database ID in this case, but it could possibly be reworked to be a data ID instead)
      * @return the customer corresponding to the ID
      */
-    @GetMapping("/customers/{id}")
-    public CustomerEo findOne(@PathVariable long id) {
+    @GetMapping("/customers/findById")
+    public CustomerEo findById(@RequestParam long id) {
         return customerService.findById(id).orElse(null);
     }
 
-    @GetMapping("/customers/{firstName}/{lastName}")
-    public CustomerEo findByFirstNameAndLastName(@PathVariable String firstName,
-                                                 @PathVariable String lastName,
-                                                 @RequestParam long delayInMs) {
-        return customerService.findByFirstNameAndLastNameDelayable(firstName, lastName, delayInMs);
+    @GetMapping("/customers/findByFirstName")
+    public List<CustomerEo> findByFirstName(@RequestParam String firstName) {
+        return customerService.findByFirstName(firstName);
+    }
+
+    @GetMapping("/customers/findByLastName")
+    public List<CustomerEo> findByLastName(@RequestParam String lastName) {
+        return customerService.findByLastName(lastName);
+    }
+
+    @GetMapping("/customers/findByFirstNameAndLastName")
+    public CustomerEo findByFirstNameAndLastName(@RequestParam String firstName,
+                                                 @RequestParam String lastName) {
+        return customerService.findByFirstNameAndLastName(firstName, lastName);
     }
 }

@@ -1,5 +1,8 @@
 package com.wixia.rediscache.persistence;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.springframework.lang.NonNull;
 
 import javax.persistence.*;
@@ -7,6 +10,9 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 @Entity(name = "customer")
 @Table(uniqueConstraints = { @UniqueConstraint(columnNames = { "firstName", "lastName" }) })
 public class CustomerEo implements Serializable {
@@ -23,8 +29,6 @@ public class CustomerEo implements Serializable {
     // EAGER is needed, or else we get in trouble when re-creating from cache
     private List<ItemEo> items;
 
-    protected CustomerEo() {}
-
     public CustomerEo(String firstName, String lastName) {
         this.firstName = firstName;
         this.lastName = lastName;
@@ -36,31 +40,5 @@ public class CustomerEo implements Serializable {
         this.lastName = lastName;
         this.items = items;
     }
-
-    public Long getId() {
-        return id;
-    }
-
-    public String getFirstName() {
-        return firstName;
-    }
-
-    public String getLastName() {
-        return lastName;
-    }
-
-    public List<ItemEo> getItems() {
-        return items;
-    }
-
-/*
-    @Override
-    public String toString() {
-        return String.format(
-            "Customer[id=%d, firstName='%s', lastName='%s', items=['%s']]",
-            id, firstName, lastName,
-            items.stream().map(ItemEo::toString).collect(Collectors.joining(", ", "[", "]")));
-    }
-*/
 
 }
