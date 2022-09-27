@@ -24,7 +24,7 @@ public class CustomerService {
     }
 
     public Optional<Customer> findById(long id) {
-        return customerRepository.findById(id); // Direct call
+        return customerRepository.findById(id);
     }
 
     public List<Customer> findAll() {
