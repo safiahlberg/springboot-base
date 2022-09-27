@@ -1,7 +1,7 @@
-package com.wixia.rediscache.service;
+package com.wixia.service;
 
-import com.wixia.rediscache.persistence.ItemEo;
-import com.wixia.rediscache.persistence.ItemRepository;
+import com.wixia.domain.Item;
+import com.wixia.domain.ItemRepository;
 
 import org.springframework.stereotype.Service;
 
@@ -19,12 +19,16 @@ public class ItemService {
         this.itemRepository = itemRepository;
     }
 
-    public Optional<ItemEo> findById(long id) {
+    public Optional<Item> findById(long id) {
         return itemRepository.findById(id);
     }
 
-    public List<ItemEo> findAll() {
+    public List<Item> findAll() {
         return StreamSupport.stream(itemRepository.findAll().spliterator(), false)
             .collect(Collectors.toList());
+    }
+
+    public Item save(Item item) {
+        return itemRepository.save(item);
     }
 }
