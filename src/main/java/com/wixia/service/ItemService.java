@@ -3,6 +3,8 @@ package com.wixia.service;
 import com.wixia.domain.Item;
 import com.wixia.domain.ItemRepository;
 
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -19,15 +21,18 @@ public class ItemService {
         this.itemRepository = itemRepository;
     }
 
+    @Cacheable(value = "defaultCache")
     public Optional<Item> findById(long id) {
         return itemRepository.findById(id);
     }
 
+    @Cacheable(value = "defaultCache")
     public List<Item> findAll() {
         return StreamSupport.stream(itemRepository.findAll().spliterator(), false)
             .collect(Collectors.toList());
     }
 
+    @CacheEvict(value = "defaultCache")
     public Item save(Item item) {
         return itemRepository.save(item);
     }
