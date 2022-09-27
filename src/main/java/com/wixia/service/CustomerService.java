@@ -28,11 +28,12 @@ public class CustomerService {
         return customerRepository.findById(id);
     }
 
+    @Cacheable(value = "customerCache")
     public List<Customer> findAll() {
         return StreamSupport.stream(customerRepository.findAll().spliterator(), false)
             .collect(Collectors.toList());
     }
-    
+
     @Cacheable(value = "customerCache")
     public List<Customer> findByLastName(String lastName) {
         return customerRepository.findByLastName(lastName);

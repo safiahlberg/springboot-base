@@ -11,7 +11,6 @@ import java.time.Duration;
 
 @Configuration
 public class CacheConfig {
-
     @Bean
     public RedisCacheManagerBuilderCustomizer redisCacheManagerBuilderCustomizer() {
         return (builder) -> builder
