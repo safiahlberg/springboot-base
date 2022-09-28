@@ -45,33 +45,15 @@ public class CacheConfig extends CachingConfigurerSupport implements CachingConf
     @Value("${redis.ttl.hours:1}")
     private int redisDataTTL;
 
-/*    @Bean
-    public RedisCacheManager redisCacheManager(LettuceConnectionFactory lettuceConnectionFactory) {
-        RedisCacheManager.RedisCacheManagerBuilder builder = RedisCacheManager.RedisCacheManagerBuilder
-            .fromConnectionFactory(lettuceConnectionFactory)
-            .cacheDefaults(cacheConfiguration());
-
-        return builder.build();
-    }*/
-
     @Bean
     public RedisCacheManager redisCacheManager(LettuceConnectionFactory lettuceConnectionFactory) {
 
-        /**
-         * If we want to use JSON Serialized with own object mapper then use the below config snippet
-         */
-        // RedisCacheConfiguration redisCacheConfiguration =
-        // RedisCacheConfiguration.defaultCacheConfig().disableCachingNullValues()
-        // .entryTtl(Duration.ofHours(redisDataTTL)).serializeValuesWith(RedisSerializationContext.SerializationPair
-        // .fromSerializer(new GenericJackson2JsonRedisSerializer(objectMapper)));
-
-        RedisCacheConfiguration redisCacheConfiguration = cacheConfiguration(); /*RedisCacheConfiguration.defaultCacheConfig().disableCachingNullValues()
-            .entryTtl(Duration.ofHours(redisDataTTL))
-            .serializeValuesWith(RedisSerializationContext.SerializationPair.fromSerializer(RedisSerializer.java()));*/
+        RedisCacheConfiguration redisCacheConfiguration = cacheConfiguration();
 
         redisCacheConfiguration.usePrefix();
 
-        RedisCacheManager redisCacheManager = RedisCacheManager.RedisCacheManagerBuilder.fromConnectionFactory(lettuceConnectionFactory)
+        RedisCacheManager redisCacheManager = RedisCacheManager.RedisCacheManagerBuilder
+            .fromConnectionFactory(lettuceConnectionFactory)
             .cacheDefaults(redisCacheConfiguration).build();
 
         redisCacheManager.setTransactionAware(true);
@@ -80,11 +62,6 @@ public class CacheConfig extends CachingConfigurerSupport implements CachingConf
 
     @Bean
     public LettuceConnectionFactory redisConnectionFactory() {
-        // LettuceClientConfiguration clientConfig = LettuceClientConfiguration.builder()
-        // .commandTimeout(Duration.ofSeconds(redisConnectionTimeoutInSecs)).shutdownTimeout(Duration.ZERO).build();
-        //
-        // return new LettuceConnectionFactory(new RedisStandaloneConfiguration(redisHost, redisPort), clientConfig);
-
         final SocketOptions socketOptions = SocketOptions.builder()
             .connectTimeout(Duration.ofSeconds(redisSocketTimeoutInSecs)).build();
 
