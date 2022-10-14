@@ -27,12 +27,12 @@ public class CustomerService {
         this.customerRepository = customerRepository;
     }
 
-    @Cacheable(value = CUSTOMER_CACHE)
+    @Cacheable(value = CUSTOMER_CACHE, key = "#id")
     public Optional<Customer> findById(long id) {
         return customerRepository.findById(id);
     }
 
-    @Cacheable(value = CUSTOMER_CACHE)
+    @Cacheable(value = CUSTOMER_CACHE, key = "all")
     public List<Customer> findAll() {
         return StreamSupport.stream(customerRepository.findAll().spliterator(), false)
             .collect(Collectors.toList());

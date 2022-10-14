@@ -32,6 +32,7 @@ import java.time.Duration;
 public class CacheConfig extends CachingConfigurerSupport implements CachingConfigurer {
 
     public static final String CUSTOMER_CACHE = "customercache";
+    public static final String CUSTOMER_CACHE_REACTIVE = "customercachereactive";
     public static final String ITEM_CACHE = "itemcache";
     @Value("${redis.hostname:localhost}")
     private String redisHost;
@@ -51,9 +52,14 @@ public class CacheConfig extends CachingConfigurerSupport implements CachingConf
     @Bean
     public RedisCacheManagerBuilderCustomizer redisCacheManagerBuilderCustomizer() {
         return (builder) -> builder
-            .withCacheConfiguration(CUSTOMER_CACHE, RedisCacheConfiguration.defaultCacheConfig())
-            .withCacheConfiguration(ITEM_CACHE, RedisCacheConfiguration.defaultCacheConfig());
+            .withCacheConfiguration(CUSTOMER_CACHE, RedisCacheConfiguration.defaultCacheConfig()
+                .entryTtl(Duration.ofHours(redisDataTTL)))
+            .withCacheConfiguration(CUSTOMER_CACHE_REACTIVE, RedisCacheConfiguration.defaultCacheConfig()
+                .entryTtl(Duration.ofHours(redisDataTTL)))
+            .withCacheConfiguration(ITEM_CACHE, RedisCacheConfiguration.defaultCacheConfig()
+                .entryTtl(Duration.ofHours(redisDataTTL)));
     }
+
     @Bean
     public RedisCacheManager redisCacheManager(LettuceConnectionFactory lettuceConnectionFactory) {
 
@@ -97,7 +103,7 @@ public class CacheConfig extends CachingConfigurerSupport implements CachingConf
     @Bean
     public RedisCacheConfiguration cacheConfiguration() {
         return RedisCacheConfiguration.defaultCacheConfig()
-            .entryTtl(Duration.ofMinutes(60))
+            .entryTtl(Duration.ofHours(redisDataTTL))
             .disableCachingNullValues()
             .serializeValuesWith(RedisSerializationContext.SerializationPair.fromSerializer(
                 new GenericJackson2JsonRedisSerializer()));

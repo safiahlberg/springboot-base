@@ -31,9 +31,6 @@ public class CustomerController {
         return ResponseEntity.ok(this.assembler.toCollectionModel(service.findAll()));
     }
 
-    @GetMapping("/reactive/customers")
-    public
-
     @GetMapping("/customers/{id}")
     public ResponseEntity<EntityModel<Customer>> getOne(@PathVariable long id) {
         return this.service.findById(id)
