@@ -13,11 +13,11 @@ public class CustomerRepositoryReactive {
 
     static {
         CUSTOMER_DATA = new HashMap<>();
-        CUSTOMER_DATA.put(1L, new Customer("Frodo", "Baggins"));
-        CUSTOMER_DATA.put(2L, new Customer("Bilbo", "Baggins"));
-        CUSTOMER_DATA.put(3L, new Customer("Samwise", "Gamgee"));
-        CUSTOMER_DATA.put(4L, new Customer("Peregrin", "Took"));
-        CUSTOMER_DATA.put(5L, new Customer("Meriadoc", "Brandybuck"));
+        CUSTOMER_DATA.put(1L, new Customer(new Customer("Frodo", "Baggins"), 1L));
+        CUSTOMER_DATA.put(2L, new Customer(new Customer("Bilbo", "Baggins"), 2L));
+        CUSTOMER_DATA.put(3L, new Customer(new Customer("Samwise", "Gamgee"), 3L));
+        CUSTOMER_DATA.put(4L, new Customer(new Customer("Peregrin", "Took"), 4L));
+        CUSTOMER_DATA.put(5L, new Customer(new Customer("Meriadoc", "Brandybuck"), 5L));
     }
 
     public Mono<Customer> findById(long id) {
