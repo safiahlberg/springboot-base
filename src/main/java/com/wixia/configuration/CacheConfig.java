@@ -31,7 +31,6 @@ import java.time.Duration;
 public class CacheConfig extends CachingConfigurerSupport implements CachingConfigurer {
 
     public static final String CUSTOMER_CACHE = "customercache";
-    public static final String CUSTOMER_CACHE_REACTIVE = "customercachereactive";
     public static final String ITEM_CACHE = "itemcache";
 
     @Value("${redis.hostname:localhost}")
@@ -53,8 +52,6 @@ public class CacheConfig extends CachingConfigurerSupport implements CachingConf
     public RedisCacheManagerBuilderCustomizer redisCacheManagerBuilderCustomizer() {
         return (builder) -> builder
             .withCacheConfiguration(CUSTOMER_CACHE, RedisCacheConfiguration.defaultCacheConfig()
-                .entryTtl(Duration.ofHours(redisDataTTL)))
-            .withCacheConfiguration(CUSTOMER_CACHE_REACTIVE, RedisCacheConfiguration.defaultCacheConfig()
                 .entryTtl(Duration.ofHours(redisDataTTL)))
             .withCacheConfiguration(ITEM_CACHE, RedisCacheConfiguration.defaultCacheConfig()
                 .entryTtl(Duration.ofHours(redisDataTTL)));
