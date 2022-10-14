@@ -3,6 +3,7 @@ package com.wixia.configuration;
 import io.lettuce.core.ClientOptions;
 import io.lettuce.core.SocketOptions;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.cache.RedisCacheManagerBuilderCustomizer;
 import org.springframework.cache.annotation.CachingConfigurer;
 import org.springframework.cache.annotation.CachingConfigurerSupport;
 import org.springframework.cache.annotation.EnableCaching;
@@ -30,6 +31,8 @@ import java.time.Duration;
 @EnableCaching
 public class CacheConfig extends CachingConfigurerSupport implements CachingConfigurer {
 
+    public static final String CUSTOMER_CACHE = "customercache";
+    public static final String ITEM_CACHE = "itemcache";
     @Value("${redis.hostname:localhost}")
     private String redisHost;
 
@@ -45,6 +48,12 @@ public class CacheConfig extends CachingConfigurerSupport implements CachingConf
     @Value("${redis.ttl.hours:1}")
     private int redisDataTTL;
 
+    @Bean
+    public RedisCacheManagerBuilderCustomizer redisCacheManagerBuilderCustomizer() {
+        return (builder) -> builder
+            .withCacheConfiguration(CUSTOMER_CACHE, RedisCacheConfiguration.defaultCacheConfig())
+            .withCacheConfiguration(ITEM_CACHE, RedisCacheConfiguration.defaultCacheConfig());
+    }
     @Bean
     public RedisCacheManager redisCacheManager(LettuceConnectionFactory lettuceConnectionFactory) {
 

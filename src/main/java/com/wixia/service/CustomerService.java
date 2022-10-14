@@ -14,6 +14,8 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
+import static com.wixia.configuration.CacheConfig.CUSTOMER_CACHE;
+
 @Service
 public class CustomerService {
 
@@ -25,33 +27,33 @@ public class CustomerService {
         this.customerRepository = customerRepository;
     }
 
-    @Cacheable(value = "defaultCache")
+    @Cacheable(value = CUSTOMER_CACHE)
     public Optional<Customer> findById(long id) {
         return customerRepository.findById(id);
     }
 
-    @Cacheable(value = "defaultCache")
+    @Cacheable(value = CUSTOMER_CACHE)
     public List<Customer> findAll() {
         return StreamSupport.stream(customerRepository.findAll().spliterator(), false)
             .collect(Collectors.toList());
     }
 
-    @Cacheable(value = "defaultCache")
+    @Cacheable(value = CUSTOMER_CACHE)
     public List<Customer> findByLastName(String lastName) {
         return customerRepository.findByLastName(lastName);
     }
 
-    @Cacheable(value = "defaultCache")
+    @Cacheable(value = CUSTOMER_CACHE)
     public List<Customer> findByFirstName(String firstName) {
         return customerRepository.findByFirstName(firstName);
     }
 
-    @Cacheable(value = "defaultCache")
+    @Cacheable(value = CUSTOMER_CACHE)
     public Optional<Customer> findByFirstNameAndLastName(String firstName, String lastName) {
         return customerRepository.findByFirstNameAndLastName(firstName, lastName);
     }
 
-    @CacheEvict(value = "defaultCache")
+    @CacheEvict(value = CUSTOMER_CACHE)
     public Customer save(Customer customer) {
         return customerRepository.save(customer);
     }

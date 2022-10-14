@@ -12,6 +12,8 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
+import static com.wixia.configuration.CacheConfig.ITEM_CACHE;
+
 @Service
 public class ItemService {
 
@@ -21,18 +23,18 @@ public class ItemService {
         this.itemRepository = itemRepository;
     }
 
-    @Cacheable(value = "defaultCache")
+    @Cacheable(value = ITEM_CACHE)
     public Optional<Item> findById(long id) {
         return itemRepository.findById(id);
     }
 
-    @Cacheable(value = "defaultCache")
+    @Cacheable(value = ITEM_CACHE)
     public List<Item> findAll() {
         return StreamSupport.stream(itemRepository.findAll().spliterator(), false)
             .collect(Collectors.toList());
     }
 
-    @CacheEvict(value = "defaultCache")
+    @CacheEvict(value = ITEM_CACHE)
     public Item save(Item item) {
         return itemRepository.save(item);
     }
