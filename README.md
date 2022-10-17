@@ -9,6 +9,16 @@ A customer has a relation to a list of items. A H2 instance is set up and
 populated with a few example objects. The Customer has a overridden
 repository, which can simulate delays dynamically.
 
+## Access reactive service
+```bash
+curl localhost:8080/reactive/customers
+```
+
+## Delete data in redis
+```bash
+ for key in $(redis-cli keys '*'); do redis-cli DEL $key; done
+ ```
+
 ## Copied code from:
 * https://docs.liquibase.com/tools-integrations/springboot/springboot.html
 * https://spring.io/guides/gs/accessing-data-jpa/

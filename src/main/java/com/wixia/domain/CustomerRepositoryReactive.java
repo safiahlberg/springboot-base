@@ -1,5 +1,9 @@
 package com.wixia.domain;
 
+import com.wixia.controller.CustomerControllerReactive;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -9,6 +13,10 @@ import java.util.Map;
 
 @Repository
 public class CustomerRepositoryReactive {
+
+    private static final Logger log = LoggerFactory.getLogger(
+        CustomerRepositoryReactive.class);
+
     private static final Map<Long, Customer> CUSTOMER_DATA; // This is just to simulate data
 
     static {
@@ -25,6 +33,7 @@ public class CustomerRepositoryReactive {
     }
 
     public Flux<Customer> findAll() {
+        log.info("Costly call to database or external system.");
         return Flux.fromIterable(CUSTOMER_DATA.values()).log();
     }
 
