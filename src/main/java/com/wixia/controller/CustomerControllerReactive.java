@@ -45,6 +45,8 @@ public class CustomerControllerReactive {
             .switchIfEmpty(
                 // Flux.defer(..) is needed because otherwise a hot Publisher will be created
                 Flux.defer(() -> findAllAndPersistToRedis())
+            ).onErrorResume(
+                throwable -> service.findAll()
             );
     }
 
