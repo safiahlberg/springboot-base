@@ -43,8 +43,8 @@ public class CustomerControllerReactive {
         return customerOps.keys("*")
             .flatMap(customerOps.opsForValue()::get)
             .switchIfEmpty(
-                // Flux.defer(() -> findAllAndPersistToRedis())
-                findAllAndPersistToRedis()
+                // Flux.defer(..) is needed because otherwise a hot Publisher will be created
+                Flux.defer(() -> findAllAndPersistToRedis())
             );
     }
 
