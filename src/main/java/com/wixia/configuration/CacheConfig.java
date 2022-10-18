@@ -46,16 +46,16 @@ public class CacheConfig extends CachingConfigurerSupport implements CachingConf
     @Value("${redis.socket.timeout.secs:1}")
     private int redisSocketTimeoutInSecs;
 
-    @Value("${redis.ttl.hours:1}")
+    @Value("${redis.ttl.minutes:3}")
     private int redisDataTTL;
 
     @Bean
     public RedisCacheManagerBuilderCustomizer redisCacheManagerBuilderCustomizer() {
         return (builder) -> builder
             .withCacheConfiguration(CUSTOMER_CACHE, RedisCacheConfiguration.defaultCacheConfig()
-                .entryTtl(Duration.ofHours(redisDataTTL)))
+                .entryTtl(Duration.ofMinutes(redisDataTTL)))
             .withCacheConfiguration(ITEM_CACHE, RedisCacheConfiguration.defaultCacheConfig()
-                .entryTtl(Duration.ofHours(redisDataTTL)));
+                .entryTtl(Duration.ofMinutes(redisDataTTL)));
     }
 
     /**
@@ -109,7 +109,7 @@ public class CacheConfig extends CachingConfigurerSupport implements CachingConf
     @Bean
     public RedisCacheConfiguration cacheConfiguration() {
         return RedisCacheConfiguration.defaultCacheConfig()
-            .entryTtl(Duration.ofHours(redisDataTTL))
+            .entryTtl(Duration.ofMinutes(redisDataTTL))
             .disableCachingNullValues()
             .serializeValuesWith(RedisSerializationContext.SerializationPair.fromSerializer(
                 new GenericJackson2JsonRedisSerializer()));

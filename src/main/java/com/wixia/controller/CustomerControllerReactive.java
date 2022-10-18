@@ -5,6 +5,7 @@ import com.wixia.service.CustomerServiceReactive;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.connection.ReactiveRedisConnectionFactory;
 import org.springframework.data.redis.core.ReactiveRedisOperations;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -26,6 +27,9 @@ public class CustomerControllerReactive {
     private final ReactiveRedisOperations<String, Customer> customerOps;
 
     private final ReactiveRedisConnectionFactory factory;
+
+    @Value("${redis.ttl.minutes:1}")
+    private int redisDataTTL;
 
     public CustomerControllerReactive(CustomerServiceReactive customerService,
                                       ReactiveRedisOperations<String, Customer> customerOps,
