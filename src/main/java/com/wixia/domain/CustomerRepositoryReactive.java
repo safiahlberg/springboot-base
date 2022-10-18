@@ -29,11 +29,12 @@ public class CustomerRepositoryReactive {
     }
 
     public Mono<Customer> findById(long id) {
+        log.info("Costly call to database or external system. CustomerRepositoryReactive.findById({})", id);
         return Mono.just(CUSTOMER_DATA.get(id)).log();
     }
 
     public Flux<Customer> findAll() {
-        log.info("Costly call to database or external system.");
+        log.info("Costly call to database or external system. CustomerRepositoryReactive.findAll()");
         return Flux.fromIterable(CUSTOMER_DATA.values()).log();
     }
 

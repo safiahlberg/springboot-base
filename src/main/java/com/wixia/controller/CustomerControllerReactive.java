@@ -51,14 +51,18 @@ public class CustomerControllerReactive {
             .switchIfEmpty(
                 // Flux.defer(..) is needed because otherwise a hot Publisher will be created
                 Flux.defer(() -> findAllAndPersistToRedis())
-            ).onErrorResume(
+            )
+            .onErrorResume(
                 throwable -> service.findAll()
             );
     }
 
     @GetMapping("/{id}")
     public Mono<Customer> getOne(@PathVariable long id) {
-        return this.service.findById(id);
+        log.info("CustomerControllerReactive.getOne({})", id);
+        return customerOps.opsForValue().get(id)
+            .switchIfEmpty(Mono.defer(() -> findOneAndPersistToRedis(id)))
+            .onErrorResume(throwable -> service.findById(id));
     }
 
     private Flux<Customer> findAllAndPersistToRedis() {
@@ -70,10 +74,29 @@ public class CustomerControllerReactive {
             .thenMany(service.findAll()).flatMap(
                 customer -> customerOps.opsForValue().set(
                     customer.getId().toString(), customer,
-                    Duration.ofMinutes(redisDataTTL)))
+                    getTimeout()))
             .thenMany(
                 customerOps.keys("*")
                     .flatMap(customerOps.opsForValue()::get)
             );
+    }
+
+    private Mono<Customer> findOneAndPersistToRedis(long id) {
+        log.info("CustomerControllerReactive.findOneAndPersistToRedis({})", id);
+        return factory
+            .getReactiveConnection()
+            .serverCommands()
+            .flushAll() // ?
+            .then(service.findById(id)).map(
+                customer -> customerOps.opsForValue().set(
+                    customer.getId().toString(), customer,
+                    getTimeout()))
+            .then(
+                customerOps.opsForValue().get(id)
+            );
+    }
+
+    private Duration getTimeout() {
+        return Duration.ofMinutes(redisDataTTL);
     }
 }

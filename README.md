@@ -19,6 +19,11 @@ curl localhost:8080/reactive/customers
  for key in $(redis-cli keys '*'); do redis-cli DEL $key; done
  ```
 
+## Get data in Redis
+```shell
+for key in $(redis-cli keys '*'); do redis-cli GET $key; done
+```
+
 ## Copied code from:
 * https://docs.liquibase.com/tools-integrations/springboot/springboot.html
 * https://spring.io/guides/gs/accessing-data-jpa/
