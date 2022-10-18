@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.time.Duration;
+
 @RestController
 @RequestMapping(value = "/reactive/customers")
 public class CustomerControllerReactive {
@@ -67,7 +69,8 @@ public class CustomerControllerReactive {
             .flushAll()
             .thenMany(service.findAll()).flatMap(
                 customer -> customerOps.opsForValue().set(
-                    customer.getId().toString(), customer))
+                    customer.getId().toString(), customer,
+                    Duration.ofMinutes(redisDataTTL)))
             .thenMany(
                 customerOps.keys("*")
                     .flatMap(customerOps.opsForValue()::get)

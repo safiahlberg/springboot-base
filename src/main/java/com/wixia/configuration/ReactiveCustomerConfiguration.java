@@ -30,6 +30,9 @@ public class ReactiveCustomerConfiguration {
     @Value("${redis.timeout.secs:1}")
     private int redisTimeoutInSecs;
 
+    @Value("${redis.ttl.minutes:1}")
+    private int redisDataTTL;
+
     @Resource
     private ClientOptions clientOptions;
 
