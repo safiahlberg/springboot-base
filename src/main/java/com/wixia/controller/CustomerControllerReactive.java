@@ -55,7 +55,7 @@ public class CustomerControllerReactive {
     public Mono<Customer> getOne(@PathVariable long id) {
         log.info("CustomerControllerReactive.getOne({})", id);
         return redisGetOne(id)
-            .switchIfEmpty(Mono.defer(() -> findOneAndPersistToRedis(id)))
+            .switchIfEmpty(Mono.defer(() -> findOneAndPersistToRedis(id))) // https://stackoverflow.com/questions/54373920/mono-switchifempty-is-always-called
             .onErrorResume(throwable -> service.findById(id));
     }
 
@@ -69,7 +69,7 @@ public class CustomerControllerReactive {
     private Mono<Customer> findOneAndPersistToRedis(long id) {
         log.info("CustomerControllerReactive.findOneAndPersistToRedis({})", id);
         return service.findById(id)
-            .map(this::redisSet)
+            .flatMap(this::redisSet) // Trial and error brought this. A map was tried first, since the intuition around Mono suggested that, but a flatMap is needed
             .then(redisGetOne(id));
     }
 
