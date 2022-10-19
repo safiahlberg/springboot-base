@@ -6,7 +6,6 @@ import com.wixia.service.CustomerServiceReactive;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.redis.connection.ReactiveRedisConnectionFactory;
 import org.springframework.data.redis.core.ReactiveRedisOperations;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -45,7 +44,7 @@ public class CustomerControllerReactive {
         return redisGetAll()
             .switchIfEmpty(
                 // Flux.defer(..) is needed because otherwise a hot Publisher will be created
-                Flux.defer(() -> findAllAndPersistToRedis())
+                Flux.defer(this::findAllAndPersistToRedis)
             )
             .onErrorResume(
                 throwable -> service.findAll()
@@ -63,14 +62,14 @@ public class CustomerControllerReactive {
     private Flux<Customer> findAllAndPersistToRedis() {
         log.info("CustmerControllerReactive.findAllAndPersistToRedis()");
         return service.findAll()
-            .flatMap(customer -> redisSet(customer))
+            .flatMap(this::redisSet)
             .thenMany(redisGetAll());
     }
 
     private Mono<Customer> findOneAndPersistToRedis(long id) {
         log.info("CustomerControllerReactive.findOneAndPersistToRedis({})", id);
         return service.findById(id)
-            .map(customer -> redisSet(customer))
+            .map(this::redisSet)
             .then(redisGetOne(id));
     }
 
@@ -80,13 +79,14 @@ public class CustomerControllerReactive {
     }
 
     private Mono<Customer> redisGetOne(long id) {
-        return customerOps.opsForValue().get(id);
+        return customerOps.opsForValue().get(Long.toString(id));
     }
 
     private Mono<Boolean> redisSet(Customer customer) {
+        log.info("set to redis");
         return customerOps.opsForValue().set(
             customer.getId().toString(), customer,
-            getTimeout());
+            getTimeout()).log();
     }
 
     private Duration getTimeout() {
