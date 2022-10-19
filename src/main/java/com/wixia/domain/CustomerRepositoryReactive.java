@@ -38,12 +38,13 @@ public class CustomerRepositoryReactive {
         return Flux.fromIterable(CUSTOMER_DATA.values()).log();
     }
 
-    public Mono<Customer> save(Customer Customer) {
-        Customer existingCustomer = CUSTOMER_DATA.get(Customer.getId());
+    public Mono<Customer> save(Customer customer) {
+        log.info("Costly call to database or external system. CustomerRepositoryReactive.save({})", customer);
+        Customer existingCustomer = CUSTOMER_DATA.get(customer.getId());
         if (existingCustomer != null) {
-            existingCustomer.setFirstName(Customer.getFirstName());
-            existingCustomer.setLastName(Customer.getLastName());
-            existingCustomer.setItems(Customer.getItems());
+            existingCustomer.setFirstName(customer.getFirstName());
+            existingCustomer.setLastName(customer.getLastName());
+            existingCustomer.setItems(customer.getItems());
         }
         return Mono.just(existingCustomer).log();
     }

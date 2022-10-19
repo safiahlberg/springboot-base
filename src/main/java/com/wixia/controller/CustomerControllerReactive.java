@@ -30,7 +30,7 @@ public class CustomerControllerReactive {
 
     private final ReactiveRedisConnectionFactory factory;
 
-    @Value("${redis.ttl.minutes:1}")
+    @Value("${redis.ttl.minutes:10}")
     private int redisDataTTL;
 
     public CustomerControllerReactive(CustomerServiceReactive customerService,
@@ -67,14 +67,14 @@ public class CustomerControllerReactive {
 
     private Flux<Customer> findAllAndPersistToRedis() {
         log.info("CustmerControllerReactive.findAllAndPersistToRedis()");
+        // The following code is copied from https://spring.io/guides/gs/spring-data-reactive-redis/
+        // But it may not be optimal for this case
         return factory
             .getReactiveConnection()
             .serverCommands()
             .flushAll()
             .thenMany(service.findAll()).flatMap(
-                customer -> customerOps.opsForValue().set(
-                    customer.getId().toString(), customer,
-                    getTimeout()))
+                customer -> redisSet(customer))
             .thenMany(
                 customerOps.keys("*")
                     .flatMap(customerOps.opsForValue()::get)
@@ -88,9 +88,7 @@ public class CustomerControllerReactive {
             .serverCommands()
             .flushAll() // ?
             .then(service.findById(id)).map(
-                customer -> customerOps.opsForValue().set(
-                    customer.getId().toString(), customer,
-                    getTimeout()))
+                customer -> redisSet(customer))
             .then(
                 customerOps.opsForValue().get(id)
             );
@@ -99,4 +97,11 @@ public class CustomerControllerReactive {
     private Duration getTimeout() {
         return Duration.ofMinutes(redisDataTTL);
     }
+
+    private Mono<Boolean> redisSet(Customer customer) {
+        return customerOps.opsForValue().set(
+            customer.getId().toString(), customer,
+            getTimeout());
+    }
+
 }
