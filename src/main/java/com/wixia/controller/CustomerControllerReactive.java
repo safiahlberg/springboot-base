@@ -69,7 +69,7 @@ public class CustomerControllerReactive {
     private Mono<Customer> findOneAndPersistToRedis(long id) {
         log.info("CustomerControllerReactive.findOneAndPersistToRedis({})", id);
         return service.findById(id)
-            .flatMap(this::redisSet) // Trial and error brought this. A map was tried first, since the intuition around Mono suggested that, but a flatMap is needed
+            .flatMap(this::redisSet)
             .then(redisGetOne(id));
     }
 
